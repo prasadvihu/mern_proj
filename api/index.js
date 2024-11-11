@@ -18,3 +18,13 @@ app.listen(3000, () => console.log("Server is listening...!!!"));
 
 app.use("/api/user", userRoute);
 app.use("/api/auth", authRoute);
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const errMessage = err.message || "Internal server error";
+  res.status(statusCode).json({
+    status: "Failure",
+    statusCode: statusCode,
+    message: errMessage,
+  });
+});
