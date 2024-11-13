@@ -14,7 +14,7 @@ export const FooterComponent = () => {
       container
       className="border border-teal-300 border-t-4 flex flex-col"
     >
-      <div className="">
+      <div className="grid sm:grid-cols-2 md:gap-10 items-center">
         <div className="mb-8">
           <Link
             to={"/"}
@@ -26,7 +26,7 @@ export const FooterComponent = () => {
             Blog
           </Link>
         </div>
-        <div className="">
+        <div className="grid grid-cols-2 sm:gap-2 md:gap-2 md:grid-cols-3">
           <div>
             <Footer.Title className="m-4" title="About" />
             <Footer.LinkGroup col>

@@ -54,7 +54,7 @@ export const signin = async (req, res, next) => {
 
     const { password: pass, ...rest } = validUser.toObject();
 
-    res.status(200).json({ rest });
+    res.status(200).json(rest);
   } catch (error) {
     next(error);
   }

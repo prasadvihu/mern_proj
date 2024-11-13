@@ -1,29 +1,36 @@
 import { Label, TextInput, Button, Alert, Spinner } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice.js";
 
 export const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user);
+  const { loading, error: errMessage } = user;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
-    console.log(formData);
+    // console.log(formData);
   };
 
   const handleSubmit = async (e) => {
-    setErrorMsg(null);
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      return setErrorMsg("All Fields are required");
+      // console.log("Form validation failed: fields are empty.");
+      return dispatch(signInFailure("All Fields are required"));
     }
 
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,16 +41,15 @@ export const SignIn = () => {
       // console.log(data);
 
       if (data.status == "Failure") {
-        setErrorMsg(data.message);
+        return dispatch(signInFailure(data.message));
       }
-      setLoading(false);
 
       if (res.ok) {
         navigate("/");
+        return dispatch(signInSuccess(data));
       }
     } catch (error) {
-      setErrorMsg(error.message);
-      setLoading(false);
+      return dispatch(signInFailure(error.message));
     }
   };
 
@@ -105,8 +111,8 @@ export const SignIn = () => {
             Sign Up
           </Link>
         </div>
+        {errMessage ? <Alert color="failure">{errMessage}</Alert> : null}
       </div>
-      {errorMsg && <Alert color="failure">{errorMsg}</Alert>}
     </div>
   );
 };
