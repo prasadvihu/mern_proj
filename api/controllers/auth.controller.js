@@ -52,7 +52,9 @@ export const signin = async (req, res, next) => {
       secure: false,
     });
 
-    res.status(200).json({ message: "sign in successful" });
+    const { password: pass, ...rest } = validUser.toObject();
+
+    res.status(200).json({ rest });
   } catch (error) {
     next(error);
   }
