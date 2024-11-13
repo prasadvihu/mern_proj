@@ -31,7 +31,11 @@ export const Header = () => {
         </Button>
 
         <Link to="/sign-in">
-          <Button className="hidden md:inline" gradientDuoTone="purpleToBlue">
+          <Button
+            className="hidden md:inline"
+            gradientDuoTone="purpleToBlue"
+            outline
+          >
             Sign In
           </Button>
           <Navbar.Toggle />
