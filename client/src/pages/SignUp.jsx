@@ -1,13 +1,21 @@
 import { Label, TextInput, Button, Alert, Spinner } from "flowbite-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { OAuth } from "../components/OAuth";
+import { useSelector } from "react-redux";
+import {
+  signInFailure,
+  signInSuccess,
+  signInStart,
+} from "../redux/user/userSlice";
 
 export const SignUp = () => {
   const [formData, setFormData] = useState({});
-  const [errorMsg, setErrorMsg] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+
+  const user = useSelector((state) => state.user);
+  const { loading, error: errMessage } = user;
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value.trim() });
@@ -23,7 +31,7 @@ export const SignUp = () => {
     }
 
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -34,16 +42,16 @@ export const SignUp = () => {
       // console.log(data);
 
       if (data.status == "Failure") {
-        setErrorMsg(data.message);
+        return dispatch(signInFailure(data.message));
       }
       setLoading(false);
 
       if (res.ok) {
         navigate("/sign-in");
+        return dispatch(signInSuccess(data));
       }
     } catch (error) {
-      setErrorMsg(error.message);
-      setLoading(false);
+      return dispatch(signInFailure(error.message));
     }
   };
 
@@ -107,6 +115,7 @@ export const SignUp = () => {
               "Sign Up"
             )}
           </Button>
+          <OAuth />
         </form>
         <div className="flex gap-2">
           <span>Have an Account?</span>
@@ -115,7 +124,7 @@ export const SignUp = () => {
           </Link>
         </div>
       </div>
-      {errorMsg && <Alert color="failure">{errorMsg}</Alert>}
+      {errMessage && <Alert color="failure">{errMessage}</Alert>}
     </div>
   );
 };
