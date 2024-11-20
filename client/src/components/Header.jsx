@@ -1,10 +1,13 @@
-import { Navbar, TextInput, Button } from "flowbite-react";
+import { Navbar, TextInput, Button, Dropdown, Avatar } from "flowbite-react";
 import { Link, useLocation } from "react-router-dom";
 import { CiSearch } from "react-icons/ci";
 import { FaMoon } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 export const Header = () => {
   const path = useLocation().pathname;
+  const { currentUser } = useSelector((state) => state.user);
+  // console.log(currentUser);
   return (
     <Navbar className="p-2 flex flex-col">
       <Link
@@ -29,17 +32,41 @@ export const Header = () => {
         <Button color="w-12 h-10 gray border-2 border-black border-solid" pill>
           <FaMoon />
         </Button>
-
-        <Link to="/sign-in">
-          <Button
-            className="hidden md:inline"
-            gradientDuoTone="purpleToBlue"
-            outline
+        {currentUser ? (
+          <Dropdown
+            arrowIcon={false}
+            inline
+            label={<Avatar img={currentUser.photoUrl} alt="user" rounded />}
           >
-            Sign In
-          </Button>
-          <Navbar.Toggle />
-        </Link>
+            <Dropdown.Header>
+              <span className="block font-sm">@{currentUser.username}</span>
+              <span className="block font-medium truncate">
+                {currentUser.email}
+              </span>
+            </Dropdown.Header>
+            <Link to="/dashboard?tab=profile">
+              <Dropdown.Item>Profile</Dropdown.Item>
+            </Link>
+            <Dropdown.Divider></Dropdown.Divider>
+            <Link>
+              <Dropdown.Item>Sign Out</Dropdown.Item>
+            </Link>
+          </Dropdown>
+        ) : (
+          <>
+            <Link to="/sign-in">
+              <Button
+                className="hidden md:inline"
+                gradientDuoTone="purpleToBlue"
+                outline
+              >
+                Sign In
+              </Button>
+            </Link>
+          </>
+        )}
+
+        <Navbar.Toggle />
       </div>
       <Navbar.Collapse>
         <Navbar.Link active={path === "/"} as={"div"}>
